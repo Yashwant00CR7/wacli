@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -128,8 +129,10 @@ func TestWarnRapidSendIfNeededWarnsAndUpdatesMarker(t *testing.T) {
 	if err != nil {
 		t.Fatalf("stat marker: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o600 {
-		t.Fatalf("marker mode = %04o, want 0600", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o600 {
+			t.Fatalf("marker mode = %04o, want 0600", got)
+		}
 	}
 }
 

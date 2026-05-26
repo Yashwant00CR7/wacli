@@ -3,6 +3,7 @@ package fsutil
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -18,8 +19,10 @@ func TestEnsurePrivateDirCreatesAndChmods(t *testing.T) {
 	if !info.IsDir() {
 		t.Fatalf("expected directory")
 	}
-	if got := info.Mode().Perm(); got != 0o700 {
-		t.Fatalf("mode = %04o, want 0700", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o700 {
+			t.Fatalf("mode = %04o, want 0700", got)
+		}
 	}
 }
 
@@ -38,8 +41,10 @@ func TestEnsurePrivateDirFixesExistingPerms(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Stat: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o700 {
-		t.Fatalf("mode = %04o, want 0700", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o700 {
+			t.Fatalf("mode = %04o, want 0700", got)
+		}
 	}
 }
 
@@ -69,8 +74,10 @@ func TestWritePrivateFileCreatesOwnerOnlyFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Stat: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o600 {
-		t.Fatalf("mode = %04o, want 0600", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o600 {
+			t.Fatalf("mode = %04o, want 0600", got)
+		}
 	}
 }
 
@@ -102,8 +109,10 @@ func TestWritePrivateFileNarrowsExistingPermsBeforeRewrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Stat: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o600 {
-		t.Fatalf("mode = %04o, want 0600", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o600 {
+			t.Fatalf("mode = %04o, want 0600", got)
+		}
 	}
 }
 
@@ -122,8 +131,10 @@ func TestEnsureWritableDirDoesNotChmodExistingDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Stat: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o755 {
-		t.Fatalf("mode = %04o, want 0755", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o755 {
+			t.Fatalf("mode = %04o, want 0755", got)
+		}
 	}
 }
 
@@ -136,12 +147,17 @@ func TestEnsureWritableDirCreatesPrivateDir(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Stat: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o700 {
-		t.Fatalf("mode = %04o, want 0700", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o700 {
+			t.Fatalf("mode = %04o, want 0700", got)
+		}
 	}
 }
 
 func TestEnsureWritableDirRejectsNonWritableDir(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping non-writable dir test on Windows")
+	}
 	dir := filepath.Join(t.TempDir(), "readonly")
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		t.Fatalf("MkdirAll: %v", err)

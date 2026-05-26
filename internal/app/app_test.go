@@ -37,6 +37,8 @@ func TestOpenWAConcurrentInitialization(t *testing.T) {
 	if a.WA() == nil {
 		t.Fatal("WA client was not initialized")
 	}
+	a.Close()
+	time.Sleep(50 * time.Millisecond)
 }
 
 func TestNewReadOnlyDoesNotCreateStoreDir(t *testing.T) {

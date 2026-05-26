@@ -18,6 +18,7 @@ import (
 	"go.mau.fi/whatsmeow/proto/waHistorySync"
 	"go.mau.fi/whatsmeow/proto/waSyncAction"
 	"go.mau.fi/whatsmeow/proto/waWeb"
+	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
 	"go.mau.fi/whatsmeow/types/events"
 	"google.golang.org/protobuf/proto"
@@ -30,8 +31,9 @@ type Options struct {
 type Client struct {
 	opts Options
 
-	mu     sync.Mutex
-	client *whatsmeow.Client
+	mu        sync.Mutex
+	client    *whatsmeow.Client
+	container *sqlstore.Container
 }
 
 func New(opts Options) (*Client, error) {
@@ -54,6 +56,9 @@ func (c *Client) Close() {
 	defer c.mu.Unlock()
 	if c.client != nil {
 		c.client.Disconnect()
+	}
+	if c.container != nil {
+		_ = c.container.Close()
 	}
 }
 

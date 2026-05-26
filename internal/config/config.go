@@ -244,7 +244,7 @@ func defaultStoreDirFor(goos, home, xdgStateHome string, exists func(string) boo
 	if goos != "linux" {
 		return legacy
 	}
-	if xdgStateHome != "" && filepath.IsAbs(xdgStateHome) {
+	if xdgStateHome != "" && (filepath.IsAbs(xdgStateHome) || (goos == "linux" && strings.HasPrefix(xdgStateHome, "/"))) {
 		return filepath.Join(xdgStateHome, "wacli")
 	}
 	xdgDefault := filepath.Join(home, ".local", "state", "wacli")

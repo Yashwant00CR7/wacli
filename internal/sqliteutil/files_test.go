@@ -3,6 +3,7 @@ package sqliteutil
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -24,8 +25,10 @@ func TestChmodFiles(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Stat %s: %v", p, err)
 		}
-		if got := info.Mode().Perm(); got != 0o600 {
-			t.Fatalf("%s mode = %04o, want 0600", filepath.Base(p), got)
+		if runtime.GOOS != "windows" {
+			if got := info.Mode().Perm(); got != 0o600 {
+				t.Fatalf("%s mode = %04o, want 0600", filepath.Base(p), got)
+			}
 		}
 	}
 }

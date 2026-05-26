@@ -35,6 +35,8 @@ func TestNewEnablesRetryMessageStore(t *testing.T) {
 	if got := c.LinkedJID(); got != "" {
 		t.Fatalf("LinkedJID before auth = %q", got)
 	}
+	c.Close()
+	time.Sleep(50 * time.Millisecond)
 }
 
 func TestBuildDeleteForMePatch(t *testing.T) {

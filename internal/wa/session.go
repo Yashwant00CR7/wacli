@@ -25,6 +25,7 @@ func (c *Client) init() error {
 	if err != nil {
 		return fmt.Errorf("open whatsmeow store: %w", err)
 	}
+	c.container = container
 	if err := sqliteutil.ChmodFiles(c.opts.StorePath, 0o600); err != nil {
 		return err
 	}

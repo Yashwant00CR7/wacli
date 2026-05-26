@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -510,8 +511,10 @@ func TestMessagesExportCommandAppliesDateFilters(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Stat: %v", err)
 	}
-	if got := info.Mode().Perm(); got != 0o600 {
-		t.Fatalf("output mode = %04o, want 0600", got)
+	if runtime.GOOS != "windows" {
+		if got := info.Mode().Perm(); got != 0o600 {
+			t.Fatalf("output mode = %04o, want 0600", got)
+		}
 	}
 	var got struct {
 		Success bool `json:"success"`
